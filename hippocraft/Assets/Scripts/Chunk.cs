@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Chunk : MonoBehaviour {
 
-	public static readonly int CHUNK_SIZE = 10;
+	public static readonly int CHUNK_SIZE = 16;
 	public static readonly int CHUNK_HEIGHT = 128;
 
 	private int chunkX;
@@ -51,6 +51,9 @@ public class Chunk : MonoBehaviour {
 		return chunkZ;
 	}
 
+	/**
+	 * A helper method to convert local tile coordinates to the actual world coordinates.
+	 */
 	public Vector3 ToWorldCoordinates(float x, float y, float z) {
 		Vector3 vec = new Vector3();
 		vec.x = chunkX * CHUNK_SIZE + x;

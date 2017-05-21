@@ -90,6 +90,9 @@ public class MapGenerator : MonoBehaviour {
 		GenerateSquareChunks(2);
 	}
 
+	/**
+	 * Reconstructs the mesh for all of the chunks in the map.
+	 */
 	public static void ReconstructMesh() {
 		if(map == null)
 			return;
