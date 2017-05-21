@@ -4,22 +4,64 @@ using UnityEngine;
 
 public class MapGenerator : MonoBehaviour {
 
+	public static MapGenerator mapGenerator;
+
 	public GameObject chunkPrefab;
-	private Dictionary<int, Dictionary<int, GameObject>> map;
 
+	private static Dictionary<int, Dictionary<int, GameObject>> map;
 
-	public GameObject InitChunk(int x, int z) {
-		int hc = Chunk.CHUNK_SIZE / 2;
-		Vector3 pos = new Vector3(x * Chunk.CHUNK_SIZE + hc, 0f, z * Chunk.CHUNK_SIZE + hc);
-		GameObject obj = Instantiate(chunkPrefab, pos, Quaternion.identity);
-		obj.GetComponent<Chunk>().SetCoords(x, z);
+	void Start () {
+		mapGenerator = this; // there should only be one mapGenerator existing at a time
+		map = new Dictionary<int, Dictionary<int, GameObject>>();
+		GenerateChunks();
+		ReconstructMesh();
+	}
+
+	void Update () {
+
+	}
+
+	void OnDrawGizmos() {
+		return;
+		Gizmos.color = Color.white;
+		if(map != null) {
+			foreach(Dictionary<int, GameObject> mapX in map.Values) {
+				foreach(GameObject obj in mapX.Values) {
+					if(obj == null)
+						continue;
+					Chunk chunk = obj.GetComponent<Chunk>();
+					Gizmos.DrawCube(chunk.ToWorldCoordinates(0, 0, 0), Vector3.one * 0.8f);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Instantiates the chunk prefab at a specific location.
+	 */
+	public static GameObject InitChunk(int x, int z) {
+		Vector3 pos = new Vector3(x * Chunk.CHUNK_SIZE, 0f, z * Chunk.CHUNK_SIZE);
+		GameObject obj = Instantiate(mapGenerator.chunkPrefab, pos, Quaternion.identity);
+		obj.GetComponent<Chunk>().InitChunk(x, z);
 		return obj;
+	}
+
+	/**
+	 * Gets the chunk and chunk coordinates (x, z), and returns null if it doesn't exist.
+	 */
+	public static GameObject GetChunk(int x, int z) {
+		if(!map.ContainsKey(x))
+			return null;
+		Dictionary<int, GameObject> mapX = map[x];
+		if(!mapX.ContainsKey(z))
+			return null;
+		return mapX[z];
 	}
 
 	/**
      * Gets the chunk at chunk coordinates (x, z), and creates the chunk if it doesn't already exist.
      */
-	public GameObject GetCreateChunk(int x, int z) {
+	public static GameObject GetCreateChunk(int x, int z) {
 		if(!map.ContainsKey(x))
 			map[x] = new Dictionary<int, GameObject>();
 		Dictionary<int, GameObject> mapX = map[x];
@@ -32,7 +74,7 @@ public class MapGenerator : MonoBehaviour {
 	/**
 	 * Generates chunks in a square on the x-z plane with 2*num+1 being the length of a side.
      */
-	public void GenerateSquareChunks(int num) {
+	public static void GenerateSquareChunks(int num) {
 		for(int x = -num; x < num; x++) {
 			for(int z = -num; z < num; z++) {
 				GetCreateChunk(x, z);
@@ -40,33 +82,46 @@ public class MapGenerator : MonoBehaviour {
 		}
 	}
 
-	public void GenerateChunks() {
+	/**
+	 * The method called during map generation to generate the chunks.
+	 * TODO: Replace this method with auto-generating chunks
+	 */
+	public static void GenerateChunks() {
 		GenerateSquareChunks(2);
 	}
 
-
-
-	void Start () {
-		map = new Dictionary<int, Dictionary<int, GameObject>>();
-		GenerateChunks();
-	}
-
-	void Update () {
-		
-	}
-
-	void OnDrawGizmos() {
-		Gizmos.color = Color.white;
-		if(map != null) {
-			foreach(Dictionary<int, GameObject> mapX in map.Values) {
-				foreach(GameObject obj in mapX.Values) {
-					if(obj == null)
-						continue;
-					Chunk chunk = obj.GetComponent<Chunk>();
-					Vector3 pos = new Vector3(chunk.GetX() + 0.5f, 0, chunk.GetZ() + 0.5f);
-					Gizmos.DrawCube(pos, Vector3.one * 0.8f);
-				}
+	public static void ReconstructMesh() {
+		if(map == null)
+			return;
+		foreach(Dictionary<int, GameObject> mapX in map.Values) {
+			foreach(GameObject obj in mapX.Values) {
+				obj.GetComponent<Chunk>().ReconstructMesh();
 			}
 		}
+	}
+
+	/**
+	 * Returns the tile id at the given world coordinates. Will return 0 for air and -1 for undefined.
+	 */
+	public static int GetTileAt(int x, int y, int z) {
+		int chunkX = Mathf.FloorToInt((float)x / Chunk.CHUNK_SIZE), modX = x % Chunk.CHUNK_SIZE;
+		int chunkZ = Mathf.FloorToInt((float)z / Chunk.CHUNK_SIZE), modZ = z % Chunk.CHUNK_SIZE;
+
+		// Fixes an issue with mod and negative numbers
+		if(chunkX < 0) modX += -chunkX * Chunk.CHUNK_SIZE;
+		if(chunkZ < 0) modZ += -chunkZ * Chunk.CHUNK_SIZE;
+
+		GameObject chunkObj = GetChunk(chunkX, chunkZ);
+		if(chunkObj == null)
+			return -1;
+		return chunkObj.GetComponent<Chunk>().GetLocalTileAt(modX, y, modZ);
+	}
+
+	/**
+	 * Returns true if the tile is not air nor undefined.
+	 */
+	public static bool IsTileBlock(int x, int y, int z) {
+		int id = GetTileAt(x, y, z);
+		return id > 0;
 	}
 }
