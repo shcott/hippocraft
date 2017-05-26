@@ -14,8 +14,8 @@ public class MapGenerator : MonoBehaviour {
 	void Start () {
 		mapGenerator = this; // there should only be one mapGenerator existing at a time
 		map = new Dictionary<int, Dictionary<int, GameObject>>();
-		GenerateChunks();
-		ReconstructMesh();
+		//GenerateChunks();
+		//ReconstructMesh();
 
 		GenerateGrid();
 	}
@@ -27,16 +27,26 @@ public class MapGenerator : MonoBehaviour {
 
 	void GenerateGrid() {
 		terrainGen = new TerrainGenerator();
-		terrainGen.GenerateTerrain(0, 0);
+		for(int x = -2; x < 2; x++) {
+			for(int z = -2; z < 2; z++) {
+				terrainGen.GenerateTerrain(x, z);
+			}
+		}
 	}
 
 	void OnDrawGizmos() {
 		// Draw the grid
 		for(int x = 0; x < 128; x++) {
 			for(int z = 0; z < 128; z++) {
-				float value = terrainGen.GetTerrainGrid(0, 0)[x, z] / 255.0f;
-				Gizmos.color = new Color(value, value, value);
-				Gizmos.DrawCube(new Vector3(x / 128.0f, 0, z / 128.0f), Vector3.one / 128.0f);
+				if(x % 4 != 0 || z % 4 != 0)
+					continue;
+				for(int x1 = -2; x1 < 2; x1++) {
+					for(int z1 = -2; z1 < 2; z1++) {
+						float value = terrainGen.GetTerrainGrid(x1, z1)[x, z] / 255.0f;
+						Gizmos.color = new Color(value, value, value);
+						Gizmos.DrawCube(new Vector3(x1 + x / 128.0f, 0, z1 + z / 128.0f), Vector3.one / 128.0f * 4);
+					}
+				}
 			}
 		}
 
@@ -127,12 +137,9 @@ public class MapGenerator : MonoBehaviour {
 	 * Returns the tile id at the given world coordinates. Will return 0 for air and -1 for undefined.
 	 */
 	public static int GetTileAt(int x, int y, int z) {
-		int chunkX = Mathf.FloorToInt((float)x / Chunk.CHUNK_SIZE), modX = x % Chunk.CHUNK_SIZE;
-		int chunkZ = Mathf.FloorToInt((float)z / Chunk.CHUNK_SIZE), modZ = z % Chunk.CHUNK_SIZE;
-
-		// Fixes an issue with mod and negative numbers
-		if(chunkX < 0) modX += -chunkX * Chunk.CHUNK_SIZE;
-		if(chunkZ < 0) modZ += -chunkZ * Chunk.CHUNK_SIZE;
+		int chunkX = Mathf.FloorToInt((float)x / Chunk.CHUNK_SIZE);
+		int chunkZ = Mathf.FloorToInt((float)z / Chunk.CHUNK_SIZE);
+		int modX = MathHC.mod(x, Chunk.CHUNK_SIZE), modZ = MathHC.mod(z, Chunk.CHUNK_SIZE);
 
 		GameObject chunkObj = GetChunk(chunkX, chunkZ);
 		if(chunkObj == null)

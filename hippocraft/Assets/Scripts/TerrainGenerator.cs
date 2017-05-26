@@ -65,6 +65,7 @@ public class TerrainGenerator {
 		AddToGrid(tGrid, ZoomGrid(tx, tz, 4), 0.2f);
 		AddToGrid(tGrid, ZoomGrid(tx, tz, 8), 0.3f);
 		AddToGrid(tGrid, ZoomGrid(tx, tz, 16), 0.4f);
+		//AddToGrid(tGrid, ZoomGrid(tx, tz, 8), 1.0f);
 
 		terrainGrid[key] = tGrid;
 	}
@@ -75,25 +76,24 @@ public class TerrainGenerator {
 		// Generate zoom key's noise grid if it doesn't already exist
 		GenerateNoiseGrid(zoomKey);
 
-		// TODO: Find the right area to zoom onto
-		int[,] zoomGrid = noiseGrid[zoomKey];
-		int offsetX = tx % scale;
-		int offsetZ = tz % scale;
+		// Find the right area to zoom onto
+		int offsetX = MathHC.mod(tx, scale);
+		int offsetZ = MathHC.mod(tz, scale);
 		int offsetScale = CHUNK_SIZE / scale;
-		return ZoomGrid_(zoomGrid, offsetX * offsetScale, offsetZ * offsetScale, scale);
+		return ZoomGrid_(noiseGrid[zoomKey], offsetX * offsetScale, offsetZ * offsetScale, scale);
 	}
 
 	/**
 	 * A utility function that does the actual zooming computations for the ZoomGrid method.
+	 * The scale parameter should be a power of 2.
 	 */
 	private int[,] ZoomGrid_(int[,] grid, int offsetX, int offsetZ, int scale) {
-		int w = grid.GetLength(0), h = grid.GetLength(1);
-		int[,] gridOut = new int[w, h];
+		int[,] gridOut = new int[CHUNK_SIZE, CHUNK_SIZE];
 
-		for(int x = 0; x < w; x++) {
-			for(int z = 0; z < h; z++) {
-				int zoomX1 = (int)(x / (float)scale);
-				int zoomZ1 = (int)(z / (float)scale);
+		for(int x = 0; x < CHUNK_SIZE; x++) {
+			for(int z = 0; z < CHUNK_SIZE; z++) {
+				int zoomX1 = (int)(x / (float)scale) + offsetX;
+				int zoomZ1 = (int)(z / (float)scale) + offsetZ;
 				int zoomX2 = (zoomX1 + 1) % CHUNK_SIZE;
 				int zoomZ2 = (zoomZ1 + 1) % CHUNK_SIZE;
 
