@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /*
- * TerrainGenerator
+ * TerrainGenerator.
  * 
  * The generator has its own grid coordinate system that is independent of the one in the MapGenerator
  * class. Thus, it must be converted to the map coordinates after generating the terrain.
@@ -33,6 +33,35 @@ public class TerrainGenerator {
 	}
 
 	/*
+	 * Generates the terrain and fills the chunk's tiles for a specified set of chunk coordinates.
+	 * Note the distinction between chunk coordinates and terrain cooordinates.
+	 */
+	public void GenerateTerrainForChunk(int cx, int cz, int[,,] tiles) {
+		int tx = cx * Chunk.CHUNK_SIZE / CHUNK_SIZE;
+		int tz = cz * Chunk.CHUNK_SIZE / CHUNK_SIZE;
+		int offsetX = MathHC.mod(cx * Chunk.CHUNK_SIZE, CHUNK_SIZE);
+		int offsetZ = MathHC.mod(cz * Chunk.CHUNK_SIZE, CHUNK_SIZE);
+
+		GenerateTerrain(tx, tz);
+		FillChunkTiles(offsetX, offsetZ, tiles, GetTerrainGrid(tx, tz));
+	}
+
+	/*
+	 * Fills the chunk tiles with the terrain grid starting at the appropriate offset. Note that the
+	 * terrain CHUNK_SIZE should be greater than the chunk CHUNK_SIZE.
+	 */
+	private void FillChunkTiles(int offsetX, int offsetZ, int[,,] tiles, int[,] grid) {
+		for(int x = 0; x < Chunk.CHUNK_SIZE; x++) {
+			for(int z = 0; z < Chunk.CHUNK_SIZE; z++) {
+				//Debug.Log("X: " + (offsetX + x) + "\tZ: " + (offsetZ + z));
+				for(int y = 0; y <= grid[offsetX + x, offsetZ + z]; y++) {
+					tiles[x, y, z] = 1;
+				}
+			}
+		}
+	}
+
+	/*
 	 * Generates the terrain for the specified terrain coordinates, and automatically returns if
 	 * the terrain grids have already been created.
 	 */
@@ -46,6 +75,10 @@ public class TerrainGenerator {
 		return tx + "." + tz;
 	}
 
+	/*
+	 * Generates the noiseGrid with a psuedo-random value for each coordinate in the grid at the
+	 * specified key. Skips if the grid has already been instantiated.
+	 */
 	private void GenerateNoiseGrid(string key) {
 		if(noiseGrid.ContainsKey(key))
 			return;
@@ -58,27 +91,34 @@ public class TerrainGenerator {
 		// Fill grid with random noise
 		for(int x = 0; x < CHUNK_SIZE; x++) {
 			for(int z = 0; z < CHUNK_SIZE; z++) {
-				nGrid[x, z] = rand.Next(0, 256);
+				nGrid[x, z] = rand.Next(0, Chunk.CHUNK_HEIGHT);
 			}
 		}
 
 		noiseGrid[key] = nGrid;
 	}
 
+	/*
+	 * Generates the terrainGrid using the Value Noise algorithm: overlaps multiple layers of the noise
+	 * grid at different zoomed scales. Skips if the grid has already been instantiated.
+	 */
 	private void GenerateTerrainGrid(string key, int tx, int tz) {
 		if(terrainGrid.ContainsKey(key))
 			return;
 
 		int[,] tGrid = new int[CHUNK_SIZE, CHUNK_SIZE];
-		AddToGrid(tGrid, noiseGrid[key], 0.025f);
-		AddToGrid(tGrid, ZoomGrid(tx, tz, 2), 0.075f);
-		AddToGrid(tGrid, ZoomGrid(tx, tz, 4), 0.2f);
-		AddToGrid(tGrid, ZoomGrid(tx, tz, 8), 0.3f);
-		AddToGrid(tGrid, ZoomGrid(tx, tz, 16), 0.4f);
+		//AddToGrid(tGrid, noiseGrid[key], 0.025f);
+		//AddToGrid(tGrid, ZoomGrid(tx, tz, 2), 0.025f);
+		AddToGrid(tGrid, ZoomGrid(tx, tz, 4), 0.05f);
+		AddToGrid(tGrid, ZoomGrid(tx, tz, 8), 0.1f);
+		AddToGrid(tGrid, ZoomGrid(tx, tz, 16), 0.2f);
 
 		terrainGrid[key] = tGrid;
 	}
 
+	/*
+	 * A zoom method that zooms into the grid and interpolates the values.
+	 */
 	private int[,] ZoomGrid(int tx, int tz, int scale) {
 		string zoomKey = GetCoordKey(tx / scale, tz / scale);
 
@@ -93,7 +133,7 @@ public class TerrainGenerator {
 	}
 
 	/*
-	 * A utility function that does the actual zooming computations for the ZoomGrid method.
+	 * A helper function that does the actual zooming computations for the ZoomGrid method.
 	 * The scale parameter should be a power of 2.
 	 */
 	private int[,] ZoomGrid_(int[,] grid, int offsetX, int offsetZ, int scale) {
@@ -109,18 +149,14 @@ public class TerrainGenerator {
 				float tx = (x % scale) / (float)scale;
 				float tz = (z % scale) / (float)scale;
 
-				float interpX1 = Interpolate(grid[zoomX1, zoomZ1], grid[zoomX2, zoomZ1], tx);
-				float interpX2 = Interpolate(grid[zoomX1, zoomZ2], grid[zoomX2, zoomZ2], tx);
-				float interpZ = Interpolate(interpX1, interpX2, tz);
+				float interpX1 = MathHC.Lerp(grid[zoomX1, zoomZ1], grid[zoomX2, zoomZ1], tx);
+				float interpX2 = MathHC.Lerp(grid[zoomX1, zoomZ2], grid[zoomX2, zoomZ2], tx);
+				float interpZ  = MathHC.Lerp(interpX1, interpX2, tz);
 
 				gridOut[x, z] = (int)interpZ;
 			}
 		}
 		return gridOut;
-	}
-
-	private float Interpolate(float val1, float val2, float t) {
-		return val1 * (1.0f-t) + val2 * t;
 	}
 
 	private void AddToGrid(int[,] grid, int[,] adding, float scale) {

@@ -14,13 +14,18 @@ public class MapGenerator : MonoBehaviour {
 	private static Dictionary<int, Dictionary<int, GameObject>> map;
 	private static TerrainGenerator terrainGen;
 
+	public static TerrainGenerator GetTerrainGen() {
+		return terrainGen;
+	}
+
 	void Start () {
 		mapGenerator = this; // there should only be one mapGenerator existing at a time
 		map = new Dictionary<int, Dictionary<int, GameObject>>();
-		//GenerateChunks();
-		//ReconstructMesh();
+		terrainGen = new TerrainGenerator();
+		GenerateChunks();
+		ReconstructMesh();
 
-		GenerateGrid();
+		//GenerateGrid();
 	}
 
 	void Update() {
@@ -38,6 +43,7 @@ public class MapGenerator : MonoBehaviour {
 	}
 
 	void OnDrawGizmos() {
+		/*
 		// Draw the grid
 		for(int x = 0; x < 128; x++) {
 			for(int z = 0; z < 128; z++) {
@@ -52,6 +58,7 @@ public class MapGenerator : MonoBehaviour {
 				}
 			}
 		}
+		*/
 
 		/*
 		// Draws cubes to show the chunk locations

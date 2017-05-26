@@ -10,7 +10,7 @@ using UnityEngine;
  */
 public class Chunk : MonoBehaviour {
 
-	public static readonly int CHUNK_SIZE = 32;
+	public static readonly int CHUNK_SIZE = 16;
 	public static readonly int CHUNK_HEIGHT = 128;
 
 	private int chunkX;
@@ -26,7 +26,8 @@ public class Chunk : MonoBehaviour {
 		chunkMesh = new ChunkMesh();
 
 		SetCoords(x, z);
-		GenerateDefaultTiles();
+		//GenerateDefaultTiles();
+		MapGenerator.GetTerrainGen().GenerateTerrainForChunk(x, z, tiles);
 	}
 
 	public void SetCoords(int x, int z) {

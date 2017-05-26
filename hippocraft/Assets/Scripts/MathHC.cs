@@ -19,4 +19,11 @@ public class MathHC {
 		int r = x%m;
 		return r<0 ? r+m : r;
 	}
+
+	/*
+	 * A linear interpolation helper function.
+	 */
+	public static float Lerp(float val1, float val2, float t) {
+		return val1 * (1.0f-t) + val2 * t;
+	}
 }
