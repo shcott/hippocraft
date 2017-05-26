@@ -9,8 +9,7 @@ public class MapGenerator : MonoBehaviour {
 	public GameObject chunkPrefab;
 
 	private static Dictionary<int, Dictionary<int, GameObject>> map;
-
-	private int[,] grid = new int[128, 128], renderGrid = new int[128, 128];
+	private static TerrainGenerator terrainGen;
 
 	void Start () {
 		mapGenerator = this; // there should only be one mapGenerator existing at a time
@@ -27,60 +26,15 @@ public class MapGenerator : MonoBehaviour {
 	}
 
 	void GenerateGrid() {
-		for(int x = 0; x < grid.GetLength(0); x++) {
-			for(int z = 0; z < grid.GetLength(1); z++) {
-				grid[x, z] = (int)(Random.value * 255);
-				renderGrid[x, z] = 0;
-			}
-		}
-		//AddToGrid(renderGrid, grid, 0.05f);
-		AddToGrid(renderGrid, ZoomGrid(grid, 2), 0.1f);
-		AddToGrid(renderGrid, ZoomGrid(grid, 4), 0.2f);
-		AddToGrid(renderGrid, ZoomGrid(grid, 8), 0.3f);
-		AddToGrid(renderGrid, ZoomGrid(grid, 16), 0.4f);
-	}
-
-	int[,] ZoomGrid(int[,] grid, int scale) {
-		int w = grid.GetLength(0), h = grid.GetLength(1);
-		int[,] gridOut = new int[w, h];
-
-		for(int x = 0; x < w; x++) {
-			for(int z = 0; z < h; z++) {
-				int zoomX1 = (int)(x / (float)scale);
-				int zoomZ1 = (int)(z / (float)scale);
-				int zoomX2 = (zoomX1 + 1) % 128;
-				int zoomZ2 = (zoomZ1 + 1) % 128;
-
-				float tx = (x % scale) / (float)scale;
-				float tz = (z % scale) / (float)scale;
-
-				float interpX1 = Interpolate(grid[zoomX1, zoomZ1], grid[zoomX2, zoomZ1], tx);
-				float interpX2 = Interpolate(grid[zoomX1, zoomZ2], grid[zoomX2, zoomZ2], tx);
-				float interpZ = Interpolate(interpX1, interpX2, tz);
-
-				gridOut[x, z] = (int)interpZ;
-			}
-		}
-		return gridOut;
-	}
-
-	float Interpolate(float val1, float val2, float t) {
-		return val1 * (1-t) + val2 * t;
-	}
-
-	void AddToGrid(int[,] grid, int[,] adding, float scale) {
-		for(int x = 0; x < grid.GetLength(0); x++) {
-			for(int z = 0; z < grid.GetLength(1); z++) {
-				grid[x, z] += (int)(adding[x, z] * scale);
-			}
-		}
+		terrainGen = new TerrainGenerator();
+		terrainGen.GenerateTerrain(0, 0);
 	}
 
 	void OnDrawGizmos() {
 		// Draw the grid
 		for(int x = 0; x < 128; x++) {
 			for(int z = 0; z < 128; z++) {
-				float value = renderGrid[x, z] / 255.0f;
+				float value = terrainGen.GetTerrainGrid(0, 0)[x, z] / 255.0f;
 				Gizmos.color = new Color(value, value, value);
 				Gizmos.DrawCube(new Vector3(x / 128.0f, 0, z / 128.0f), Vector3.one / 128.0f);
 			}
