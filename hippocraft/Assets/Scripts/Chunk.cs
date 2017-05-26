@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Chunk : MonoBehaviour {
 
-	public static readonly int CHUNK_SIZE = 10;
+	public static readonly int CHUNK_SIZE = 32;
 	public static readonly int CHUNK_HEIGHT = 128;
 
 	private int chunkX;
