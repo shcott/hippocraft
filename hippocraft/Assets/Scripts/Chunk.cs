@@ -2,6 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * Chunk.
+ * 
+ * A chunk of tiles. The MapGenerator loads these tiles in chunks, and the tiles are rendered as an
+ * individual chunk as well.
+ */
 public class Chunk : MonoBehaviour {
 
 	public static readonly int CHUNK_SIZE = 32;
@@ -12,7 +18,7 @@ public class Chunk : MonoBehaviour {
 	private int[,,] tiles;
 	private ChunkMesh chunkMesh;
 
-	/**
+	/*
 	 * Initializes the chunk's data. Must be manually called.
 	 */
 	public void InitChunk(int x, int z) {
@@ -36,7 +42,7 @@ public class Chunk : MonoBehaviour {
 		return chunkZ;
 	}
 
-	/**
+	/*
 	 * A helper method to convert local tile coordinates to the actual world coordinates.
 	 */
 	public Vector3 ToWorldCoordinates(float x, float y, float z) {
@@ -51,7 +57,7 @@ public class Chunk : MonoBehaviour {
 		return ToWorldCoordinates(coord.x, coord.y, coord.z);
 	}
 
-	/**
+	/*
 	 * Gets the tile at the specified local chunk coordinates. Returns -1 if the coordinate
 	 * is out of bounds.
 	 */
@@ -62,7 +68,7 @@ public class Chunk : MonoBehaviour {
 		return tiles[x, y, z];
 	}
 
-	/**
+	/*
 	 * Initializes the tiles in this chunk to be blocks for the bottom half of the height
 	 * and air for the top half of the height.
 	 */
@@ -76,7 +82,7 @@ public class Chunk : MonoBehaviour {
 		}
 	}
 
-	/**
+	/*
 	 * Clears this chunk's mesh and reconstructs it with the new tile positions. Usually
 	 * only called initially or when a tile has been changed.
 	 */

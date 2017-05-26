@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * MapGenerator.
+ */
 public class MapGenerator : MonoBehaviour {
 
 	public static MapGenerator mapGenerator;
@@ -66,7 +69,7 @@ public class MapGenerator : MonoBehaviour {
 		*/
 	}
 
-	/**
+	/*
 	 * Instantiates the chunk prefab at a specific location.
 	 */
 	public static GameObject InitChunk(int x, int z) {
@@ -76,7 +79,7 @@ public class MapGenerator : MonoBehaviour {
 		return obj;
 	}
 
-	/**
+	/*
 	 * Gets the chunk and chunk coordinates (x, z), and returns null if it doesn't exist.
 	 */
 	public static GameObject GetChunk(int x, int z) {
@@ -88,7 +91,7 @@ public class MapGenerator : MonoBehaviour {
 		return mapX[z];
 	}
 
-	/**
+	/*
      * Gets the chunk at chunk coordinates (x, z), and creates the chunk if it doesn't already exist.
      */
 	public static GameObject GetCreateChunk(int x, int z) {
@@ -101,7 +104,7 @@ public class MapGenerator : MonoBehaviour {
 		return mapX[z];
 	}
 
-	/**
+	/*
 	 * Generates chunks in a square on the x-z plane with 2*num+1 being the length of a side.
      */
 	public static void GenerateSquareChunks(int num) {
@@ -112,7 +115,7 @@ public class MapGenerator : MonoBehaviour {
 		}
 	}
 
-	/**
+	/*
 	 * The method called during map generation to generate the chunks.
 	 * TODO: Replace this method with auto-generating chunks
 	 */
@@ -120,7 +123,7 @@ public class MapGenerator : MonoBehaviour {
 		GenerateSquareChunks(2);
 	}
 
-	/**
+	/*
 	 * Reconstructs the mesh for all of the chunks in the map.
 	 */
 	public static void ReconstructMesh() {
@@ -133,7 +136,7 @@ public class MapGenerator : MonoBehaviour {
 		}
 	}
 
-	/**
+	/*
 	 * Returns the tile id at the given world coordinates. Will return 0 for air and -1 for undefined.
 	 */
 	public static int GetTileAt(int x, int y, int z) {
@@ -147,7 +150,7 @@ public class MapGenerator : MonoBehaviour {
 		return chunkObj.GetComponent<Chunk>().GetLocalTileAt(modX, y, modZ);
 	}
 
-	/**
+	/*
 	 * Returns true if the tile is not air nor undefined.
 	 */
 	public static bool IsTileBlock(int x, int y, int z) {

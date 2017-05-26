@@ -3,6 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * TerrainGenerator
+ * 
+ * The generator has its own grid coordinate system that is independent of the one in the MapGenerator
+ * class. Thus, it must be converted to the map coordinates after generating the terrain.
+ * 
+ * The generator also uses a pseudo-random number generator to generate the noise. The RNG values
+ * rely on the specified seed (random by default) and the terrain coordinates, with the actual seed
+ * having the value of "<seed>:<terrainx>.<terrainz>" .
+ */
 public class TerrainGenerator {
 
 	private string terrainSeed;
@@ -22,7 +32,7 @@ public class TerrainGenerator {
 		return terrainGrid[GetCoordKey(tx, tz)];
 	}
 
-	/**
+	/*
 	 * Generates the terrain for the specified terrain coordinates, and automatically returns if
 	 * the terrain grids have already been created.
 	 */
@@ -65,7 +75,6 @@ public class TerrainGenerator {
 		AddToGrid(tGrid, ZoomGrid(tx, tz, 4), 0.2f);
 		AddToGrid(tGrid, ZoomGrid(tx, tz, 8), 0.3f);
 		AddToGrid(tGrid, ZoomGrid(tx, tz, 16), 0.4f);
-		//AddToGrid(tGrid, ZoomGrid(tx, tz, 8), 1.0f);
 
 		terrainGrid[key] = tGrid;
 	}
@@ -83,7 +92,7 @@ public class TerrainGenerator {
 		return ZoomGrid_(noiseGrid[zoomKey], offsetX * offsetScale, offsetZ * offsetScale, scale);
 	}
 
-	/**
+	/*
 	 * A utility function that does the actual zooming computations for the ZoomGrid method.
 	 * The scale parameter should be a power of 2.
 	 */

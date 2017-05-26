@@ -2,14 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/**
+/*
+ * MathHC.
+ * 
  * A simple class for useful math functions.
  */
 public class MathHC {
 
 	private MathHC() {}
 
-	/**
+	/*
 	 * C# defines modulus for negative numbers differently than what is convenient. This is
 	 * a more useful definition.
 	 */

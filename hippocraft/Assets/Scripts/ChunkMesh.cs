@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/**
+/*
+ * ChunkMesh.
+ * 
  * A class containing all properties regarding a chunk's mesh for the sake of organization.
  */
 public class ChunkMesh {
