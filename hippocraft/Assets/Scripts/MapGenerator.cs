@@ -127,7 +127,7 @@ public class MapGenerator : MonoBehaviour {
 	 * TODO: Replace this method with auto-generating chunks
 	 */
 	public static void GenerateChunks() {
-		GenerateSquareChunks(2);
+		GenerateSquareChunks(4);
 	}
 
 	/*
@@ -147,9 +147,10 @@ public class MapGenerator : MonoBehaviour {
 	 * Returns the tile id at the given world coordinates. Will return 0 for air and -1 for undefined.
 	 */
 	public static int GetTileAt(int x, int y, int z) {
-		int chunkX = Mathf.FloorToInt((float)x / Chunk.CHUNK_SIZE);
-		int chunkZ = Mathf.FloorToInt((float)z / Chunk.CHUNK_SIZE);
-		int modX = MathHC.mod(x, Chunk.CHUNK_SIZE), modZ = MathHC.mod(z, Chunk.CHUNK_SIZE);
+		int chunkX = MathHC.FloorDivision(x, Chunk.CHUNK_SIZE);
+		int chunkZ = MathHC.FloorDivision(z, Chunk.CHUNK_SIZE);
+		int modX = MathHC.Mod(x, Chunk.CHUNK_SIZE);
+		int modZ = MathHC.Mod(z, Chunk.CHUNK_SIZE);
 
 		GameObject chunkObj = GetChunk(chunkX, chunkZ);
 		if(chunkObj == null)

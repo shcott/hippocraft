@@ -11,11 +11,16 @@ public class MathHC {
 
 	private MathHC() {}
 
+	public static int FloorDivision(int num, int den) {
+		return Mathf.FloorToInt((float)num / den);
+		//return num / den;
+	}
+
 	/*
 	 * C# defines modulus for negative numbers differently than what is convenient. This is
 	 * a more useful definition.
 	 */
-	public static int mod(int x, int m) {
+	public static int Mod(int x, int m) {
 		int r = x%m;
 		return r<0 ? r+m : r;
 	}

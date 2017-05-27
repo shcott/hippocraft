@@ -75,7 +75,7 @@ public class Chunk : MonoBehaviour {
 	 */
 	public void GenerateDefaultTiles() {
 		for(int x = 0; x < CHUNK_SIZE; x++) {
-			for(int y = 0; y < CHUNK_HEIGHT / 2; y++) {
+			for(int y = 0; y < x +1; y++) {
 				for(int z = 0; z < CHUNK_SIZE; z++) {
 					tiles[x, y, z] = 1;
 				}
@@ -96,17 +96,20 @@ public class Chunk : MonoBehaviour {
 				for(int z = 0; z < CHUNK_SIZE; z++) {
 					if(tiles[x, y, z] == 0)
 						continue;
-					if(!MapGenerator.IsTileBlock(x+1, y  , z  ))
+					Vector3 w = ToWorldCoordinates(x, y, z);
+					int wx = (int)w.x, wy = (int)w.y, wz = (int)w.z;
+						
+					if(!MapGenerator.IsTileBlock(wx+1, wy  , wz  ))
 						chunkMesh.AddRightFace(x, y, z, ref startIndex);
-					if(!MapGenerator.IsTileBlock(x-1, y  , z  ))
+					if(!MapGenerator.IsTileBlock(wx-1, wy  , wz  ))
 						chunkMesh.AddLeftFace(x, y, z, ref startIndex);
-					if(!MapGenerator.IsTileBlock(x  , y+1, z  ))
+					if(!MapGenerator.IsTileBlock(wx  , wy+1, wz  ))
 						chunkMesh.AddTopFace(x, y, z, ref startIndex);
-					if(!MapGenerator.IsTileBlock(x  , y-1, z  ))
+					if(!MapGenerator.IsTileBlock(wx  , wy-1, wz  ))
 						chunkMesh.AddBottomFace(x, y, z, ref startIndex);
-					if(!MapGenerator.IsTileBlock(x  , y  , z+1))
+					if(!MapGenerator.IsTileBlock(wx  , wy  , wz+1))
 						chunkMesh.AddBackFace(x, y, z, ref startIndex);
-					if(!MapGenerator.IsTileBlock(x  , y  , z-1))
+					if(!MapGenerator.IsTileBlock(wx  , wy  , wz-1))
 						chunkMesh.AddFrontFace(x, y, z, ref startIndex);
 				}
 			}

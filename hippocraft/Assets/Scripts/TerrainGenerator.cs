@@ -37,10 +37,10 @@ public class TerrainGenerator {
 	 * Note the distinction between chunk coordinates and terrain cooordinates.
 	 */
 	public void GenerateTerrainForChunk(int cx, int cz, int[,,] tiles) {
-		int tx = cx * Chunk.CHUNK_SIZE / CHUNK_SIZE;
-		int tz = cz * Chunk.CHUNK_SIZE / CHUNK_SIZE;
-		int offsetX = MathHC.mod(cx * Chunk.CHUNK_SIZE, CHUNK_SIZE);
-		int offsetZ = MathHC.mod(cz * Chunk.CHUNK_SIZE, CHUNK_SIZE);
+		int tx = MathHC.FloorDivision(cx * Chunk.CHUNK_SIZE, CHUNK_SIZE);
+		int tz = MathHC.FloorDivision(cz * Chunk.CHUNK_SIZE, CHUNK_SIZE);
+		int offsetX = MathHC.Mod(cx * Chunk.CHUNK_SIZE, CHUNK_SIZE);
+		int offsetZ = MathHC.Mod(cz * Chunk.CHUNK_SIZE, CHUNK_SIZE);
 
 		GenerateTerrain(tx, tz);
 		FillChunkTiles(offsetX, offsetZ, tiles, GetTerrainGrid(tx, tz));
@@ -54,7 +54,8 @@ public class TerrainGenerator {
 		for(int x = 0; x < Chunk.CHUNK_SIZE; x++) {
 			for(int z = 0; z < Chunk.CHUNK_SIZE; z++) {
 				//Debug.Log("X: " + (offsetX + x) + "\tZ: " + (offsetZ + z));
-				for(int y = 0; y <= grid[offsetX + x, offsetZ + z]; y++) {
+				int groundAmount = 4;
+				for(int y = 0; y <= groundAmount + grid[offsetX + x, offsetZ + z]; y++) {
 					tiles[x, y, z] = 1;
 				}
 			}
@@ -108,10 +109,12 @@ public class TerrainGenerator {
 
 		int[,] tGrid = new int[CHUNK_SIZE, CHUNK_SIZE];
 		//AddToGrid(tGrid, noiseGrid[key], 0.025f);
-		//AddToGrid(tGrid, ZoomGrid(tx, tz, 2), 0.025f);
-		AddToGrid(tGrid, ZoomGrid(tx, tz, 4), 0.05f);
-		AddToGrid(tGrid, ZoomGrid(tx, tz, 8), 0.1f);
-		AddToGrid(tGrid, ZoomGrid(tx, tz, 16), 0.2f);
+		//AddToGrid(tGrid, ZoomGrid(tx, tz, 2), 0.001f);
+		//AddToGrid(tGrid, ZoomGrid(tx, tz, 4), 0.005f);
+		//AddToGrid(tGrid, ZoomGrid(tx, tz, 8), 0.02f);
+		AddToGrid(tGrid, ZoomGrid(tx, tz, 16), 0.05f);
+		AddToGrid(tGrid, ZoomGrid(tx, tz, 32), 0.15f);
+		AddToGrid(tGrid, ZoomGrid(tx, tz, 64), 0.1f);
 
 		terrainGrid[key] = tGrid;
 	}
@@ -126,8 +129,8 @@ public class TerrainGenerator {
 		GenerateNoiseGrid(zoomKey);
 
 		// Find the right area to zoom onto
-		int offsetX = MathHC.mod(tx, scale);
-		int offsetZ = MathHC.mod(tz, scale);
+		int offsetX = MathHC.Mod(tx, scale);
+		int offsetZ = MathHC.Mod(tz, scale);
 		int offsetScale = CHUNK_SIZE / scale;
 		return ZoomGrid_(noiseGrid[zoomKey], offsetX * offsetScale, offsetZ * offsetScale, scale);
 	}
