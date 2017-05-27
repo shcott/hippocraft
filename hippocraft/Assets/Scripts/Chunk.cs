@@ -26,7 +26,6 @@ public class Chunk : MonoBehaviour {
 		chunkMesh = new ChunkMesh();
 
 		SetCoords(x, z);
-		//GenerateDefaultTiles();
 		MapGenerator.GetTerrainGen().GenerateTerrainForChunk(x, z, tiles);
 	}
 
@@ -75,7 +74,7 @@ public class Chunk : MonoBehaviour {
 	 */
 	public void GenerateDefaultTiles() {
 		for(int x = 0; x < CHUNK_SIZE; x++) {
-			for(int y = 0; y < x +1; y++) {
+			for(int y = 0; y < CHUNK_HEIGHT/2; y++) {
 				for(int z = 0; z < CHUNK_SIZE; z++) {
 					tiles[x, y, z] = 1;
 				}

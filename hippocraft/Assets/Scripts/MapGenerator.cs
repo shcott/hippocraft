@@ -24,22 +24,9 @@ public class MapGenerator : MonoBehaviour {
 		terrainGen = new TerrainGenerator();
 		GenerateChunks();
 		ReconstructMesh();
-
-		//GenerateGrid();
 	}
 
 	void Update() {
-		if(Input.GetMouseButtonDown(0))
-			GenerateGrid();
-	}
-
-	void GenerateGrid() {
-		terrainGen = new TerrainGenerator();
-		for(int x = -2; x < 2; x++) {
-			for(int z = -2; z < 2; z++) {
-				terrainGen.GenerateTerrain(x, z);
-			}
-		}
 	}
 
 	void OnDrawGizmos() {
@@ -55,21 +42,6 @@ public class MapGenerator : MonoBehaviour {
 						Gizmos.color = new Color(value, value, value);
 						Gizmos.DrawCube(new Vector3(x1 + x / 128.0f, 0, z1 + z / 128.0f), Vector3.one / 128.0f * 4);
 					}
-				}
-			}
-		}
-		*/
-
-		/*
-		// Draws cubes to show the chunk locations
-		Gizmos.color = Color.white;
-		if(map != null) {
-			foreach(Dictionary<int, GameObject> mapX in map.Values) {
-				foreach(GameObject obj in mapX.Values) {
-					if(obj == null)
-						continue;
-					Chunk chunk = obj.GetComponent<Chunk>();
-					Gizmos.DrawCube(chunk.ToWorldCoordinates(0, 0, 0), Vector3.one * 0.8f);
 				}
 			}
 		}
