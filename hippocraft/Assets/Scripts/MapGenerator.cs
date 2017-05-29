@@ -10,6 +10,7 @@ public class MapGenerator : MonoBehaviour {
 	public static MapGenerator mapGenerator;
 
 	public GameObject chunkPrefab;
+	public GameObject chunksTransform;
 
 	private static Dictionary<int, Dictionary<int, GameObject>> map;
 	private static TerrainGenerator terrainGen;
@@ -55,6 +56,7 @@ public class MapGenerator : MonoBehaviour {
 		Vector3 pos = new Vector3(x * Chunk.CHUNK_SIZE, 0f, z * Chunk.CHUNK_SIZE);
 		GameObject obj = Instantiate(mapGenerator.chunkPrefab, pos, Quaternion.identity);
 		obj.GetComponent<Chunk>().InitChunk(x, z);
+		obj.transform.SetParent(mapGenerator.chunksTransform.transform);
 		return obj;
 	}
 
