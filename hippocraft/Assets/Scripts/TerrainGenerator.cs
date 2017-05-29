@@ -112,8 +112,8 @@ public class TerrainGenerator {
 		//AddToGrid(tGrid, ZoomGrid(tx, tz, 2), 0.001f);
 		//AddToGrid(tGrid, ZoomGrid(tx, tz, 4), 0.005f);
 		//AddToGrid(tGrid, ZoomGrid(tx, tz, 8), 0.02f);
-		AddToGrid(tGrid, ZoomGrid(tx, tz, 16), 0.05f);
-		AddToGrid(tGrid, ZoomGrid(tx, tz, 32), 0.15f);
+		AddToGrid(tGrid, ZoomGrid(tx, tz, 16), 0.02f);
+		AddToGrid(tGrid, ZoomGrid(tx, tz, 32), 0.2f);
 		AddToGrid(tGrid, ZoomGrid(tx, tz, 64), 0.1f);
 
 		terrainGrid[key] = tGrid;

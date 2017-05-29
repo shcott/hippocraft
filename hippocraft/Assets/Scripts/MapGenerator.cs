@@ -99,7 +99,7 @@ public class MapGenerator : MonoBehaviour {
 	 * TODO: Replace this method with auto-generating chunks
 	 */
 	public static void GenerateChunks() {
-		GenerateSquareChunks(4);
+		GenerateSquareChunks(6);
 	}
 
 	/*
