@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,24 +8,37 @@ using UnityEngine;
  */
 public class MapGenerator : MonoBehaviour {
 
-	public static MapGenerator mapGenerator;
-
 	public GameObject chunkPrefab;
 	public GameObject chunksTransform;
 
+	private static MapGenerator mapGenerator;
 	private static Dictionary<int, Dictionary<int, GameObject>> map;
 	private static TerrainGenerator terrainGen;
+	private static bool mapInit = false;
+
+	public static MapGenerator GetMapGen() {
+		return mapGenerator;
+	}
+
+	public static Dictionary<int, Dictionary<int, GameObject>> GetMap() {
+		return map;
+	}
 
 	public static TerrainGenerator GetTerrainGen() {
 		return terrainGen;
 	}
 
-	void Start () {
+	public static bool GetMapInit() {
+		return MapGenerator.mapInit;
+	}
+
+	void Start() {
 		mapGenerator = this; // there should only be one mapGenerator existing at a time
 		map = new Dictionary<int, Dictionary<int, GameObject>>();
-		terrainGen = new TerrainGenerator();
+		terrainGen = new TerrainGenerator();	
 		GenerateChunks();
 		ReconstructMesh();
+		mapInit = true;
 	}
 
 	void Update() {
@@ -61,7 +75,7 @@ public class MapGenerator : MonoBehaviour {
 	}
 
 	/*
-	 * Gets the chunk and chunk coordinates (x, z), and returns null if it doesn't exist.
+	 * Gets the chunk at chunk coordinates (x, z), and returns null if it doesn't exist.
 	 */
 	public static GameObject GetChunk(int x, int z) {
 		if(!map.ContainsKey(x))
@@ -79,9 +93,25 @@ public class MapGenerator : MonoBehaviour {
 		if(!map.ContainsKey(x))
 			map[x] = new Dictionary<int, GameObject>();
 		Dictionary<int, GameObject> mapX = map[x];
+		if(!mapX.ContainsKey(z))
+			mapX[z] = InitChunk(x, z);
+		return mapX[z];
+	}
+
+	/*
+	 * Creates the chunk at chunk coordinates (x, z), and returns true if successful. If the chunk has
+	 * already been created, it will return false instead.
+	 */
+	public static GameObject GetCreateChunk(int x, int z, out bool created) {
+		if(!map.ContainsKey(x))
+			map[x] = new Dictionary<int, GameObject>();
+		Dictionary<int, GameObject> mapX = map[x];
 		if(!mapX.ContainsKey(z)) {
 			mapX[z] = InitChunk(x, z);
+			created = true;
+			return mapX[z];
 		}
+		created = false;
 		return mapX[z];
 	}
 
@@ -101,7 +131,7 @@ public class MapGenerator : MonoBehaviour {
 	 * TODO: Replace this method with auto-generating chunks
 	 */
 	public static void GenerateChunks() {
-		GenerateSquareChunks(6);
+		GenerateSquareChunks(4);
 	}
 
 	/*

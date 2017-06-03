@@ -57,6 +57,8 @@ public class Chunk : MonoBehaviour {
 		return ToWorldCoordinates(coord.x, coord.y, coord.z);
 	}
 
+
+
 	/*
 	 * Gets the tile at the specified local chunk coordinates. Returns -1 if the coordinate
 	 * is out of bounds.
@@ -84,7 +86,8 @@ public class Chunk : MonoBehaviour {
 
 	/*
 	 * Clears this chunk's mesh and reconstructs it with the new tile positions. Usually
-	 * only called initially or when a tile has been changed.
+	 * only called initially or when a tile has been changed. Should also be called after a
+	 * new chunk has been created.
 	 */
 	public void ReconstructMesh() {
 		chunkMesh.Clear();
